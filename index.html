@@ -138,7 +138,7 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbyInQ7wVoBVIJHGwFXVBQWhyM5WvtkWCr3Q0Hr1cOyYRajoX-ViXUGyA5-4ceoWuWmS/exec';
 
 function norm(s) {
-  return String(s || '').trim().toLowerCase().replace(/[\.\-\/\s]/g, '');
+  return String(s || '').trim().toLowerCase().replace(/[.\-\/\s]/g, '');
 }
 
 function formatDate(s) {
@@ -206,12 +206,11 @@ function renderCard(item) {
     ? '<button class="btn-comprovante" onclick="toggleComprovante(\'' + id + '\')">📄 Ver Comprovante de Entrega</button>' +
       '<div class="comprovante-info" id="' + id + '">' +
       '<strong>📁 Como acessar o comprovante:</strong>' +
-      'Abra o Explorador de Arquivos no seu computador e procure na pasta de comprovantes pelo arquivo:<br>' +
+      'Abra o Explorador de Arquivos e procure pelo arquivo:<br>' +
       '<code>' + item.nf + '.pdf</code>' +
       '<code>NF' + item.nf + '.pdf</code>' +
       '</div>'
     : '';
-
   return '<div class="result-card">' +
     '<div class="result-header">' +
       '<div class="result-nf"><span>NF </span>' + (item.nf || '—') + '</div>' + badge +
@@ -221,9 +220,7 @@ function renderCard(item) {
       '<div class="info-cell"><div class="info-cell-label">Pedido cliente</div><div class="info-cell-value">' + (item.pedidoCliente || '—') + '</div></div>' +
       dataCell +
       '<div class="info-cell"><div class="info-cell-label">Previsão original</div><div class="info-cell-value">' + formatDate(item.prev) + '</div></div>' +
-    '</div>' +
-    btnComp +
-  '</div>';
+    '</div>' + btnComp + '</div>';
 }
 
 async function buscar() {
@@ -234,7 +231,8 @@ async function buscar() {
   cardCount = 0;
   el.innerHTML = '<div class="loading"><span class="spinner"></span>Consultando planilha...</div>';
   try {
-    const res = await fetch(API_URL, {redirect: 'follow', mode: 'cors'});
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(API_URL);
+    const res = await fetch(proxyUrl);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('Formato inválido');
